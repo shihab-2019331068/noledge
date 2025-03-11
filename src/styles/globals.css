@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: white;
+    --foreground: #111827;
+  }
+
+  .dark {
+    --background: #0f0f0f;
+    --foreground: #ffffff;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+  
+  .animate-pulse-subtle {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  .animate-slideIn {
+    animation: slideIn 0.3s ease-out forwards;
+  }
+}
+
+body {
+  @apply bg-[var(--background)] text-[var(--foreground)] min-h-screen;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.dark {
+  @apply bg-[#0f0f0f] text-white;
+}
+
+.dark .bg-white {
+  @apply bg-[#0f0f0f];
+}
+
+.dark .border-gray-300 {
+  @apply border-gray-700;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-gray-800;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  @apply hover:bg-gray-800;
+}
+
+.dark .border-b {
+  @apply border-gray-800;
+}
+
+.dark .border-r {
+  @apply border-gray-800;
+}
+
+.dark .border-t {
+  @apply border-gray-800;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 250px;
+  background-color: #f4f4f4;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: auto;
+  transition: transform 0.3s ease;
+  transform: translateX(-100%);
+}
+.sidebar.open {
+  transform: translateX(0);
+}
+.toggle-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+.nav-items a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+/* TopBar styles */
+.top-bar {
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+}
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+.search-bar {
+  flex: 1;
+  margin: 0 20px;
+}
+.profile-options {
+  display: flex;
+  align-items: center;
+}
+
+/* General layout styles */
+main {
+  margin-top: 60px; /* Height of the top bar */
+  margin-left: 250px; /* Width of the sidebar when open */
+  transition: margin-left 0.3s ease;
+}
+.sidebar.open + main {
+  margin-left: 0;
+} 
