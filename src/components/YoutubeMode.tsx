@@ -24,7 +24,7 @@ const fetchVideoTitle = async (videoId: string): Promise<string> => {
 
 export default function YoutubeMode() {
   const [videoUrl, setVideoUrl] = useState('');
-  const [videoId, setVideoId] = useState('dQw4w9WgXcQ');
+  const [videoId, setVideoId] = useState('');
   const [videoKey, setVideoKey] = useState(0);
   const [recentVideos, setRecentVideos] = useState<RecentVideo[]>([]);
   const [error, setError] = useState('');
@@ -116,30 +116,6 @@ export default function YoutubeMode() {
           </button>
         </div>
         {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
-
-        {recentVideos.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-              Recent Videos
-            </h3>
-            <div className="space-y-2">
-              {recentVideos.map((video) => (
-                <button
-                  key={video.id}
-                  onClick={() => handleRecentVideoClick(video.id)}
-                  className="w-full p-2 text-left rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{video.title}</span>
-                    <span className="text-sm text-gray-500">
-                      {new Date(video.timestamp).toLocaleDateString()}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

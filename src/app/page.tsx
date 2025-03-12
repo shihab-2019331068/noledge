@@ -8,7 +8,7 @@ import TopBar from '@/components/TopBar'
 import YoutubeMode from '@/components/YoutubeMode'
 
 export default function Home() {
-  const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube'>('editor')
+  const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube'>('youtube')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [audioFile, setAudioFile] = useState<File | null>(null)

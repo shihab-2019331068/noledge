@@ -118,22 +118,26 @@ const TopBar = ({
             id="text-upload"
           />
           
-          {/* Visible upload buttons with icons */}
-          <button
-            onClick={triggerAudioUpload}
-            className="flex items-center gap-2 px-4 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <FaFileAudio />
-            <span>Upload Audio</span>
-          </button>
+          {/* Only show upload buttons in editor mode */}
+          {mode === 'editor' && (
+            <>
+              <button
+                onClick={triggerAudioUpload}
+                className="flex items-center gap-2 px-4 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                <FaFileAudio />
+                <span>Upload Audio</span>
+              </button>
 
-          <button
-            onClick={triggerTextUpload}
-            className="flex items-center gap-2 px-4 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-          >
-            <FaFileAlt />
-            <span>Upload Text</span>
-          </button>
+              <button
+                onClick={triggerTextUpload}
+                className="flex items-center gap-2 px-4 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              >
+                <FaFileAlt />
+                <span>Upload Text</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -152,4 +156,4 @@ const TopBar = ({
   );
 };
 
-export default TopBar; 
+export default TopBar;
