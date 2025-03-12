@@ -25,6 +25,7 @@ const fetchVideoTitle = async (videoId: string): Promise<string> => {
 export default function YoutubeMode() {
   const [videoUrl, setVideoUrl] = useState('');
   const [videoId, setVideoId] = useState('dQw4w9WgXcQ');
+  const [videoKey, setVideoKey] = useState(0);
   const [recentVideos, setRecentVideos] = useState<RecentVideo[]>([]);
   const [error, setError] = useState('');
 
@@ -53,15 +54,12 @@ export default function YoutubeMode() {
     return null;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleUrlInput(videoUrl);
-  };
 
   const handleUrlInput = async (url: string) => {
     const id = extractVideoId(url);
     if (id) {
       setVideoId(id);
+      setVideoKey(k => k + 1);
       setError('');
       
       const title = await fetchVideoTitle(id);
@@ -90,6 +88,11 @@ export default function YoutubeMode() {
     }
   };
 
+  const handleRecentVideoClick = (id: string) => {
+    setVideoId(id);
+    setVideoKey(k => k + 1);
+  };
+
   return (
     <div className="space-y-6">
       <div className="max-w-4xl mx-auto">
@@ -97,6 +100,7 @@ export default function YoutubeMode() {
           videoSrc=""
           mode="youtube"
           youtubeVideoId={videoId}
+          key={videoKey}
         />
 
         <div className="mt-4 flex justify-center">
@@ -122,7 +126,7 @@ export default function YoutubeMode() {
               {recentVideos.map((video) => (
                 <button
                   key={video.id}
-                  onClick={() => setVideoId(video.id)}
+                  onClick={() => handleRecentVideoClick(video.id)}
                   className="w-full p-2 text-left rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <div className="flex items-center justify-between">

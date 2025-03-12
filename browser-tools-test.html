@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrowserTools MCP Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #console-output {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BrowserTools MCP Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Console Log Test</h2>
+        <button id="log-button">Generate Console Logs</button>
+        <div id="console-output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Network Request Test</h2>
+        <button id="fetch-button">Make Fetch Request</button>
+        <div id="fetch-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>DOM Element Test</h2>
+        <p>Click on any element to select it for the BrowserTools extension.</p>
+        <div id="test-element" style="padding: 20px; background-color: #e0f7fa; text-align: center;">
+            This is a test element that you can select
+        </div>
+    </div>
+
+    <script>
+        // Console Log Test
+        document.getElementById('log-button').addEventListener('click', function() {
+            console.log('This is a regular log message');
+            console.info('This is an info message');
+            console.warn('This is a warning message');
+            console.error('This is an error message');
+            
+            const obj = { name: 'Test Object', properties: ['prop1', 'prop2', 'prop3'] };
+            console.log('Object log:', obj);
+            
+            console.trace('This is a trace message');
+            
+            document.getElementById('console-output').textContent = 'Logs generated! Check your console.';
+        });
+        
+        // Network Request Test
+        document.getElementById('fetch-button').addEventListener('click', function() {
+            const fetchResult = document.getElementById('fetch-result');
+            fetchResult.textContent = 'Fetching data...';
+            
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.json())
+                .then(data => {
+                    fetchResult.textContent = 'Fetch successful! Result: ' + JSON.stringify(data);
+                })
+                .catch(error => {
+                    fetchResult.textContent = 'Fetch error: ' + error.message;
+                });
+        });
+    </script>
+</body>
+</html>
