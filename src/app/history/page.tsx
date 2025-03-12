@@ -1,6 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
+import Sidebar from '@/components/Sidebar'
+import TopBar from '@/app/history/TopBar'
+import Tile from './components/Tile'
 
 interface RecentVideo {
   id: string;
@@ -8,45 +11,69 @@ interface RecentVideo {
   timestamp: number;
 }
 
-export default function HistoryPage() {
+export default function Home() {
+  const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube'>('youtube')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoId, setVideoId] = useState('');
+  const [videoKey, setVideoKey] = useState(0);
   const [recentVideos, setRecentVideos] = useState<RecentVideo[]>([]);
 
   useEffect(() => {
+    // Load recent videos from localStorage
     const saved = localStorage.getItem('recentYoutubeVideos');
     if (saved) {
       setRecentVideos(JSON.parse(saved));
     }
   }, []);
+  
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode)
+  }
+
+  const handleRecentVideoClick = (id: string) => {
+    setVideoId(id);
+    setVideoKey(k => k + 1);
+  };
+
+  const handleAddToPlaylist = (id: string) => {
+    // TODO: Implement playlist functionality
+    console.log('Add to playlist:', id);
+  };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Watch History</h1>
-      <div className="space-y-2">
-        {recentVideos.map((video) => (
-          <div
-            key={video.id}
-            className="w-full p-4 rounded-lg bg-white dark:bg-gray-800 shadow"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{video.title}</h3>
-                <p className="text-sm text-gray-500">
-                  {new Date(video.timestamp).toLocaleDateString()}
-                </p>
-              </div>
-              <a
-                href={`/youtube?v=${video.id}`}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                Watch Again
-              </a>
+    <div className={`min-h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
+      <TopBar 
+        onToggleSidebar={toggleSidebar}
+      />
+      <div className="flex flex-1">
+        <Sidebar 
+          isOpen={isSidebarOpen}
+          onThemeToggle={toggleTheme}
+          isDarkMode={isDarkMode}
+        />
+        <main className={`flex-1 pt-16 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+          <div className="p-6 max-w-3xl mx-auto w-full">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Recent Videos</h2>
+            <div className="space-y-4">
+              {recentVideos.map(video => (
+                <Tile
+                  key={video.id}
+                  {...video}
+                  onVideoClick={handleRecentVideoClick}
+                  onAddToPlaylist={handleAddToPlaylist}
+                />
+              ))}
             </div>
           </div>
-        ))}
+        </main>
       </div>
-      {recentVideos.length === 0 && (
-        <p className="text-gray-500 text-center">No watch history yet</p>
-      )}
     </div>
-  );
+  )
 }

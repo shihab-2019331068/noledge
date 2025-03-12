@@ -9,6 +9,10 @@ interface RecentVideo {
   timestamp: number;
 }
 
+interface YoutubeModeProps {
+  initialVideoId: string | null;
+}
+
 const fetchVideoTitle = async (videoId: string): Promise<string> => {
   try {
     const response = await fetch(
@@ -22,9 +26,9 @@ const fetchVideoTitle = async (videoId: string): Promise<string> => {
   }
 };
 
-export default function YoutubeMode() {
+export default function YoutubeMode({ initialVideoId }: YoutubeModeProps) {
   const [videoUrl, setVideoUrl] = useState('');
-  const [videoId, setVideoId] = useState('');
+  const [videoId, setVideoId] = useState<string | null>(initialVideoId);
   const [videoKey, setVideoKey] = useState(0);
   const [recentVideos, setRecentVideos] = useState<RecentVideo[]>([]);
   const [error, setError] = useState('');
@@ -36,6 +40,12 @@ export default function YoutubeMode() {
       setRecentVideos(JSON.parse(saved));
     }
   }, []);
+
+  useEffect(() => {
+    if (initialVideoId) {
+      setVideoId(initialVideoId);
+    }
+  }, [initialVideoId]);
 
   const extractVideoId = (url: string): string | null => {
     try {
@@ -53,7 +63,6 @@ export default function YoutubeMode() {
     }
     return null;
   };
-
 
   const handleUrlInput = async (url: string) => {
     const id = extractVideoId(url);
@@ -99,7 +108,7 @@ export default function YoutubeMode() {
         <YoutubePlayer
           videoSrc=""
           mode="youtube"
-          youtubeVideoId={videoId}
+          youtubeVideoId={videoId || undefined}
           key={videoKey}
         />
 

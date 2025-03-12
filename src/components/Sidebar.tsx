@@ -15,7 +15,7 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode }: SidebarProps) => {
     { icon: <FaHome className="text-xl" />, label: 'Home', href: '/' },
     { icon: <FaUpload className="text-xl" />, label: 'Upload', href: '/upload' },
     { icon: <FaRegPlayCircle className="text-xl" />, label: 'Your Videos', href: '/videos' },
-    { icon: <FaHistory className="text-xl" />, label: 'History', href: '/history' },
+    { icon: <FaHistory className="text-xl" />, label: 'History', href: '/history', newTab: true },
   ];
 
   return (
@@ -29,6 +29,8 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode }: SidebarProps) => {
           <a
             key={index}
             href={item.href}
+            target={item.newTab ? "_blank" : undefined}
+            rel={item.newTab ? "noopener noreferrer" : undefined}
             className={`flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
               isOpen ? 'gap-4' : 'justify-center'
             }`}
@@ -68,4 +70,4 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode }: SidebarProps) => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

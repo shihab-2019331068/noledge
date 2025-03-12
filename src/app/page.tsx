@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import EditorMode from '@/components/EditorMode'
 import ViewerMode from '@/components/ViewerMode'
 import Sidebar from '@/components/Sidebar'
@@ -13,6 +14,16 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [textFile, setTextFile] = useState<File | null>(null)
+  const [videoId, setVideoId] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const urlVideoId = searchParams.get('video')
+    if (urlVideoId) {
+      setMode('youtube')
+      setVideoId(urlVideoId)
+    }
+  }, [searchParams])
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
@@ -68,7 +79,7 @@ export default function Home() {
             ) : (
               <div className="flex flex-col items-center">
                 <div className="max-w-4xl w-full">
-                  <YoutubeMode />
+                  <YoutubeMode initialVideoId={videoId} />
                 </div>
               </div>
             )}
