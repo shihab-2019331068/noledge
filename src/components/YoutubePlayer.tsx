@@ -3,10 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 interface YouTubePlayerProps {
   videoSrc: string;
   posterSrc?: string;
-  title?: string;
-  channelName?: string;
-  viewCount?: string;
-  uploadDate?: string;
   mode?: 'editor' | 'viewer' | 'youtube';
   youtubeVideoId?: string;
 }
@@ -14,10 +10,6 @@ interface YouTubePlayerProps {
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   videoSrc,
   posterSrc,
-  title = "Video Title",
-  channelName = "Channel Name",
-  viewCount = "1M views",
-  uploadDate = "1 month ago",
   mode = 'viewer',
   youtubeVideoId
 }) => {
@@ -31,8 +23,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [isTheaterMode, setIsTheaterMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
@@ -193,24 +183,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
   
-  const toggleLike = () => {
-    if (isLiked) {
-      setIsLiked(false);
-    } else {
-      setIsLiked(true);
-      setIsDisliked(false);
-    }
-  };
-  
-  const toggleDislike = () => {
-    if (isDisliked) {
-      setIsDisliked(false);
-    } else {
-      setIsDisliked(true);
-      setIsLiked(false);
-    }
-  };
-  
   const renderVideoPlayer = () => {
     if (mode === 'youtube') {
       const videoId = getYouTubeVideoId();
@@ -229,7 +201,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          title={title}
+          title="YouTube Video"
         ></iframe>
       );
     } else {
@@ -394,72 +366,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         onMouseLeave={mode !== 'youtube' && isPlaying ? () => setShowControls(false) : undefined}
       >
         {renderVideoPlayer()}
-      </div>
-      
-      <div className="py-3 px-4">
-        <h1 className="text-xl font-bold mb-2">{title}</h1>
-        <div className="flex flex-wrap justify-between items-center mb-3">
-          <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-gray-300 mr-3"></div>
-            <div>
-              <div className="font-medium">{channelName}</div>
-              <div className="text-sm text-gray-500">1.2M subscribers</div>
-            </div>
-            <button className="ml-4 bg-red-600 text-white px-4 py-2 rounded-full font-medium">
-              Subscribe
-            </button>
-          </div>
-          
-          <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-            <div className="flex items-center bg-gray-100 rounded-full overflow-hidden">
-              <button 
-                className={`flex items-center px-4 py-2 ${isLiked ? 'text-blue-600' : ''}`}
-                onClick={toggleLike}
-              >
-                <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" />
-                </svg>
-                123K
-              </button>
-              <div className="w-px h-6 bg-gray-300"></div>
-              <button 
-                className={`flex items-center px-4 py-2 ${isDisliked ? 'text-blue-600' : ''}`}
-                onClick={toggleDislike}
-              >
-                <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z" />
-                </svg>
-                Dislike
-              </button>
-            </div>
-            
-            <button className="flex items-center px-3 py-2 bg-gray-100 rounded-full">
-              <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
-              </svg>
-              Share
-            </button>
-            
-            <button className="flex items-center px-3 py-2 bg-gray-100 rounded-full">
-              <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z" />
-              </svg>
-              Save
-            </button>
-          </div>
-        </div>
-        
-        <div className="bg-gray-100 p-3 rounded-lg">
-          <div className="flex items-center text-sm text-gray-600 mb-2">
-            <span className="mr-2">{viewCount}</span>
-            <span className="mr-2">{uploadDate}</span>
-          </div>
-          <p className="text-sm line-clamp-2">
-            This is a description of the video. It could include details about the content, 
-            links to resources mentioned in the video, timestamps for different sections, etc.
-          </p>
-          <button className="text-sm font-medium mt-1">SHOW MORE</button>
-        </div>
       </div>
     </div>
   );
