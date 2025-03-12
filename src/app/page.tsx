@@ -7,9 +7,11 @@ import ViewerMode from '@/components/ViewerMode'
 import Sidebar from '@/components/Sidebar'
 import TopBar from '@/components/TopBar'
 import YoutubeMode from '@/components/YoutubeMode'
+import PlaylistsPage from './playlists/PlaylistsPage'
+import HistoryPage from './history/HistoryPage'
 
 export default function Home() {
-  const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube'>('youtube')
+  const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube' | 'history' | 'playlists'>('youtube')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [audioFile, setAudioFile] = useState<File | null>(null)
@@ -45,16 +47,16 @@ export default function Home() {
     <div className={`min-h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
       <TopBar 
         onToggleSidebar={toggleSidebar}
-        mode={mode}
-        onModeChange={setMode}
-        onAudioUpload={handleAudioUpload}
-        onTextUpload={handleTextUpload}
       />
       <div className="flex flex-1">
         <Sidebar 
           isOpen={isSidebarOpen}
           onThemeToggle={toggleTheme}
           isDarkMode={isDarkMode}
+          mode={mode}
+          onModeChange={setMode}
+          onAudioUpload={handleAudioUpload}
+          onTextUpload={handleTextUpload}
         />
         <main className={`flex-1 pt-16 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
           <div className="p-6">
@@ -76,10 +78,28 @@ export default function Home() {
                   />
                 </div>
               </div>
+            ) : mode === 'youtube' ? (
+              <div className="flex flex-col items-center">
+                <div className="max-w-4xl w-full">
+                  <YoutubeMode initialVideoId={videoId} />
+                </div>
+              </div>
+            ) : mode === 'history' ? (
+              <div className="flex flex-col items-center">
+                <div className="max-w-4xl w-full">
+                  <YoutubeMode initialVideoId={videoId} />
+                </div>
+                <div className="max-w-4xl w-full">
+                  <HistoryPage />
+                </div>
+              </div>
             ) : (
               <div className="flex flex-col items-center">
                 <div className="max-w-4xl w-full">
                   <YoutubeMode initialVideoId={videoId} />
+                </div>
+                <div className="max-w-4xl w-full">
+                  <PlaylistsPage />
                 </div>
               </div>
             )}

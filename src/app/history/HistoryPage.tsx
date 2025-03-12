@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Sidebar from '@/components/Sidebar'
-import TopBar from '@/app/history/TopBar'
-import Tile from './components/Tile'
+import Tile from './components/Tile'; // Adjust the path as necessary
+
 
 interface RecentVideo {
   id: string;
@@ -11,8 +10,7 @@ interface RecentVideo {
   timestamp: number;
 }
 
-export default function Home() {
-  const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube'>('youtube')
+const HistoryPage = () =>  {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [videoUrl, setVideoUrl] = useState('');
@@ -27,15 +25,6 @@ export default function Home() {
       setRecentVideos(JSON.parse(saved));
     }
   }, []);
-  
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode)
-  }
 
   const handleRecentVideoClick = (id: string) => {
     setVideoId(id);
@@ -49,19 +38,11 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
-      <TopBar 
-        onToggleSidebar={toggleSidebar}
-      />
       <div className="flex flex-1">
-        <Sidebar 
-          isOpen={isSidebarOpen}
-          onThemeToggle={toggleTheme}
-          isDarkMode={isDarkMode}
-        />
-        <main className={`flex-1 pt-16 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-          <div className="p-6 max-w-3xl mx-auto w-full">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Recent Videos</h2>
-            <div className="space-y-4">
+        <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-48' : 'ml-16'}`}>
+          <div className="p-2 w-full">
+            <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">Recent Videos</h2>
+            <div className="space-y-2">
               {recentVideos.map(video => (
                 <Tile
                   key={video.id}
@@ -76,4 +57,6 @@ export default function Home() {
       </div>
     </div>
   )
-}
+};
+
+export default HistoryPage;

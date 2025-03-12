@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import PlaylistDialog from '../../../components/PlaylistDialog';
 
 interface TileProps {
   id: string;
@@ -10,9 +11,28 @@ interface TileProps {
 
 const Tile: React.FC<TileProps> = ({ id, title, onVideoClick, onAddToPlaylist }) => {
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleClick = (id: string) => {
     router.push(`/?video=${id}`);
+  };
+
+  const handleAddToPlaylist = (playlistName: string) => {
+    // Get existing playlist data
+    const playlistsData = JSON.parse(localStorage.getItem('playlistsData') || '{}');
+    
+    // Add video to playlist
+    if (!playlistsData[playlistName]) {
+      playlistsData[playlistName] = [];
+    }
+    
+    if (!playlistsData[playlistName].some((video: any) => video.id === id)) {
+      playlistsData[playlistName].push({ id, title });
+    }
+    
+    // Save updated playlists
+    localStorage.setItem('playlistsData', JSON.stringify(playlistsData));
+    onAddToPlaylist(id);
   };
 
   return (
@@ -26,7 +46,7 @@ const Tile: React.FC<TileProps> = ({ id, title, onVideoClick, onAddToPlaylist })
       <button
         onClick={(e) => {
           e.stopPropagation();
-          onAddToPlaylist(id);
+          setIsDialogOpen(true);
         }}
         className="ml-2 p-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
       >
@@ -34,6 +54,12 @@ const Tile: React.FC<TileProps> = ({ id, title, onVideoClick, onAddToPlaylist })
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
       </button>
+
+      <PlaylistDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onAddToPlaylist={handleAddToPlaylist}
+      />
     </div>
   );
 };
