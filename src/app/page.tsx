@@ -5,7 +5,7 @@ import EditorMode from '@/components/EditorMode'
 import ViewerMode from '@/components/ViewerMode'
 import Sidebar from '@/components/Sidebar'
 import TopBar from '@/components/TopBar'
-import YoutubePlayer from '@/components/YoutubePlayer'
+import YoutubeMode from '@/components/YoutubeMode'
 
 export default function Home() {
   const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube'>('editor')
@@ -13,7 +13,6 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [textFile, setTextFile] = useState<File | null>(null)
-  const [youtubeVideoId, setYoutubeVideoId] = useState<string>('')
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
@@ -69,23 +68,7 @@ export default function Home() {
             ) : (
               <div className="flex flex-col items-center">
                 <div className="max-w-4xl w-full">
-                  <YoutubePlayer 
-                    videoSrc=""
-                    mode="youtube"
-                    youtubeVideoId={youtubeVideoId || "dQw4w9WgXcQ"}
-                  />
-                  <div className="mt-4">
-                    <input
-                      type="text"
-                      value={youtubeVideoId}
-                      onChange={(e) => setYoutubeVideoId(e.target.value)}
-                      placeholder="Enter YouTube Video ID"
-                      className="p-2 border rounded w-full"
-                    />
-                    <p className="text-sm text-gray-500 mt-2">
-                      Enter a YouTube video ID to watch and create subtitles for it
-                    </p>
-                  </div>
+                  <YoutubeMode />
                 </div>
               </div>
             )}
@@ -94,4 +77,4 @@ export default function Home() {
       </div>
     </div>
   )
-} 
+}

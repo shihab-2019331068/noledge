@@ -3,15 +3,17 @@ import React, { useState, useRef, useEffect } from 'react';
 interface YouTubePlayerProps {
   videoSrc: string;
   posterSrc?: string;
-  mode?: 'editor' | 'viewer' | 'youtube';
+  mode?: 'editor' | 'viewer' | 'youtube';  // 'youtube' is default
   youtubeVideoId?: string;
+  onVideoSrcChange?: (newSrc: string) => void;
 }
 
 const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   videoSrc,
   posterSrc,
-  mode = 'viewer',
-  youtubeVideoId
+  mode = 'youtube',  // Changed default mode to 'youtube'
+  youtubeVideoId,
+  onVideoSrcChange
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100);
@@ -182,7 +184,18 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
-  
+
+  const handlePasteUrl = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (clipboardText && onVideoSrcChange) {
+        onVideoSrcChange(clipboardText);
+      }
+    } catch (err) {
+      console.error('Failed to read clipboard:', err);
+    }
+  };
+
   const renderVideoPlayer = () => {
     if (mode === 'youtube') {
       const videoId = getYouTubeVideoId();
