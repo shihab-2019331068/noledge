@@ -45,6 +45,12 @@ export default function PlaylistModal({ isOpen, onClose, onSave }: PlaylistModal
     onSave(newPlaylist.id);
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      createNewPlaylist();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -69,15 +75,11 @@ export default function PlaylistModal({ isOpen, onClose, onSave }: PlaylistModal
             type="text"
             value={newPlaylistName}
             onChange={(e) => setNewPlaylistName(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="New playlist name"
-            className="flex-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            autoFocus
           />
-          <button
-            onClick={createNewPlaylist}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Create
-          </button>
         </div>
 
         <button
