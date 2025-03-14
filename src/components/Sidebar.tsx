@@ -144,6 +144,30 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
             <FaRegPlayCircle className="text-xl" />
             {isOpen && <span>Viewer Mode</span>}
           </button>
+
+          {/* Add Audio upload button when in video mode */}
+          {mode === 'viewer' && (
+            <>
+              <button
+                onClick={triggerAudioUpload}
+                className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
+                  isOpen ? 'gap-4 pl-8' : 'justify-center'
+                }`}
+              >
+                <FaFileAudio className="text-xl" />
+                {isOpen && <span>Upload Audio</span>}
+              </button>
+              <button
+                onClick={triggerTextUpload}
+                className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
+                  isOpen ? 'gap-4 pl-8' : 'justify-center'
+                }`}
+              >
+                <FaFileAlt className="text-xl" />
+                {isOpen && <span>Upload Text</span>}
+              </button>
+            </>
+          )}
           <button
             onClick={() => handleModeChange('youtube')}
             className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
