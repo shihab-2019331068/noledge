@@ -17,7 +17,14 @@ interface PlaylistsData {
   [key: string]: PlaylistVideo[];
 }
 
-const PlaylistsPage = () => {
+const PlaylistsPage = ({
+  onModeChange,
+  onVideoIdChange
+}: {
+  onModeChange: (mode: 'editor' | 'viewer' | 'youtube' | 'history' | 'playlists') => void;
+  onVideoIdChange: (id: string) => void;
+}) => 
+  {
   const [playlists, setPlaylists] = useState<PlaylistsData>({});
   const [expandedPlaylist, setExpandedPlaylist] = useState<string | null>(null);
   const router = useRouter();
@@ -30,7 +37,8 @@ const PlaylistsPage = () => {
   }, []);
 
   const handleVideoClick = (videoId: string) => {
-    router.push(`/?video=${videoId}`);
+    onVideoIdChange(videoId);
+    onModeChange('youtube');
   };
 
   const togglePlaylist = (playlistName: string) => {

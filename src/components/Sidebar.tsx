@@ -1,6 +1,7 @@
 "use client";
 
 import React, {useRef} from 'react';
+import { useRouter } from 'next/navigation';
 import { FaHome, FaUpload, FaHistory, FaRegPlayCircle, FaCog, FaListUl, FaFileAudio, FaFileAlt, FaYoutube } from 'react-icons/fa';
 import { MdOutlineLightMode, MdOutlineDarkMode } from 'react-icons/md';
 
@@ -15,6 +16,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudioUpload, onTextUpload }: SidebarProps) => {
+  const router = useRouter();
   const navItems = [
     { icon: <FaHome className="text-xl" />, label: 'Home', href: '/' },
     { icon: <FaUpload className="text-xl" />, label: 'Upload', href: '/upload' },
@@ -58,6 +60,11 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
     }
   };
 
+  const handleModeChange = (newMode: 'editor' | 'viewer' | 'youtube' | 'history' | 'playlists') => {
+    onModeChange(newMode);
+    router.push(`/`);
+  };
+
   return (
     <div className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white transition-all duration-300 ease-in-out ${
       isOpen ? 'w-64' : 'w-20'
@@ -80,7 +87,7 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
             ) : (
               <button
                 key={index}
-                onClick={() => onModeChange(item.mode as 'history' | 'playlists')}
+                onClick={() => handleModeChange(item.mode as 'history' | 'playlists')}
                 className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
                   isOpen ? 'gap-4' : 'justify-center'
                 } ${mode === item.mode ? 'text-primary' : ''}`}
@@ -95,7 +102,7 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
         {/* Mode Selection */}
         <div className="py-2 border-t">
           <button
-            onClick={() => onModeChange('editor')}
+            onClick={() => handleModeChange('editor')}
             className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
               isOpen ? 'gap-4' : 'justify-center'
             } ${mode === 'editor' ? 'text-primary' : ''}`}
@@ -129,7 +136,7 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
           )}
 
           <button
-            onClick={() => onModeChange('viewer')}
+            onClick={() => handleModeChange('viewer')}
             className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
               isOpen ? 'gap-4' : 'justify-center'
             } ${mode === 'viewer' ? 'text-primary' : ''}`}
@@ -138,7 +145,7 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
             {isOpen && <span>Viewer Mode</span>}
           </button>
           <button
-            onClick={() => onModeChange('youtube')}
+            onClick={() => handleModeChange('youtube')}
             className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
               isOpen ? 'gap-4' : 'justify-center'
             } ${mode === 'youtube' ? 'text-red-600' : ''}`}

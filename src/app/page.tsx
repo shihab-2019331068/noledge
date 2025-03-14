@@ -10,6 +10,12 @@ import YoutubeMode from '@/components/YoutubeMode'
 import PlaylistsPage from './playlists/PlaylistsPage'
 import HistoryPage from './history/HistoryPage'
 
+interface RecentVideo {
+  id: string;
+  timestamp: string;
+  title?: string;
+}
+
 export default function Home() {
   const [mode, setMode] = useState<'editor' | 'viewer' | 'youtube' | 'history' | 'playlists'>('youtube')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -19,13 +25,36 @@ export default function Home() {
   const [videoId, setVideoId] = useState<string | null>(null)
   const searchParams = useSearchParams()
 
-  useEffect(() => {
-    const urlVideoId = searchParams.get('video')
-    if (urlVideoId) {
-      setMode('youtube')
-      setVideoId(urlVideoId)
+  const getVideoTitle = async (videoId: string) => {
+    try {
+      const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+      const data = await response.json();
+      return data.title || 'Untitled Video';
+    } catch (error) {
+      console.error('Error fetching video title:', error);
+      return 'Untitled Video';
     }
-  }, [searchParams])
+  };
+
+  useEffect(() => {
+    const handleVideoId = async () => {
+      if (videoId) {
+        // Add to recent videos
+        const title = await getVideoTitle(videoId);
+        const newRecent: RecentVideo = {
+          id: videoId,
+          timestamp: new Date().toISOString(),
+          title: title
+        };
+
+        const recentVideos = JSON.parse(localStorage.getItem('recentYoutubeVideos') || '[]');
+        const updated: RecentVideo[] = [newRecent, ...recentVideos.filter((v: RecentVideo) => v.id !== videoId)].slice(0, 10);
+        localStorage.setItem('recentYoutubeVideos', JSON.stringify(updated));
+      }
+    }
+    
+    handleVideoId();
+  }, [searchParams, getVideoTitle]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
@@ -47,6 +76,8 @@ export default function Home() {
     <div className={`min-h-screen flex flex-col ${isDarkMode ? 'dark' : ''}`}>
       <TopBar 
         onToggleSidebar={toggleSidebar}
+        onModeChange={setMode}
+        onVideoIdChange={setVideoId}
       />
       <div className="flex flex-1">
         <Sidebar 
@@ -60,49 +91,37 @@ export default function Home() {
         />
         <main className={`flex-1 pt-16 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
           <div className="p-6">
-            {mode === 'editor' ? (
-              <div className="flex flex-col items-center">
-                <div className="max-w-4xl w-full">
+            <div className="flex flex-col items-center">
+              <div className="max-w-4xl w-full">
+                {(mode === 'youtube' || mode === 'history' || mode === 'playlists') && (
+                  <YoutubeMode initialVideoId={videoId} />
+                )}
+                {mode === 'editor' && (
                   <EditorMode 
                     audioFile={audioFile}
                     textFile={textFile}
                   />
-                </div>
-              </div>
-            ) : mode === 'viewer' ? (
-              <div className="flex flex-col items-center">
-                <div className="max-w-4xl w-full">
+                )}
+                {mode === 'viewer' && (
                   <ViewerMode 
                     audioFile={audioFile}
                     textFile={textFile}
                   />
-                </div>
+                )}
+                {mode === 'history' && (
+                  <HistoryPage 
+                    onModeChange={setMode}
+                    onVideoIdChange={setVideoId}
+                  />
+                )}
+                {mode === 'playlists' && (
+                  <PlaylistsPage 
+                    onModeChange={setMode}
+                    onVideoIdChange={setVideoId}
+                  />
+                )}
               </div>
-            ) : mode === 'youtube' ? (
-              <div className="flex flex-col items-center">
-                <div className="max-w-4xl w-full">
-                  <YoutubeMode initialVideoId={videoId} />
-                </div>
-              </div>
-            ) : mode === 'history' ? (
-              <div className="flex flex-col items-center">
-                <div className="max-w-4xl w-full">
-                  <YoutubeMode initialVideoId={videoId} />
-                </div>
-                <div className="max-w-4xl w-full">
-                  <HistoryPage />
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center">
-                <div className="max-w-4xl w-full">
-                  <YoutubeMode initialVideoId={videoId} />
-                </div>
-                <div className="max-w-4xl w-full">
-                  <PlaylistsPage />
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </main>
       </div>

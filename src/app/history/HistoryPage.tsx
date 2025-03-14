@@ -9,6 +9,8 @@ interface RecentVideo {
   id: string;
   title: string;
   timestamp: number;
+  mode: 'editor' | 'viewer' | 'youtube' | 'history' | 'playlists';
+  onModeChange: (mode: 'editor' | 'viewer' | 'youtube' | 'history' | 'playlists') => void;
 }
 
 interface PlaylistVideo {
@@ -16,19 +18,40 @@ interface PlaylistVideo {
   title: string;
 }
 
-const HistoryPage = () =>  {
-  const router = useRouter()
+const HistoryPage = ({
+  onModeChange,
+  onVideoIdChange
+}: {
+  onModeChange: (mode: 'editor' | 'viewer' | 'youtube' | 'history' | 'playlists') => void;
+  onVideoIdChange: (id: string) => void;
+}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [recentVideos, setRecentVideos] = useState<RecentVideo[]>([]);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Load recent videos from localStorage
+  
+  const loadRecentVideos = () => {
     const saved = localStorage.getItem('recentYoutubeVideos');
     if (saved) {
       setRecentVideos(JSON.parse(saved));
     }
+  };
+
+  useEffect(() => {
+    loadRecentVideos();
+
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'recentYoutubeVideos') {
+        loadRecentVideos();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleAddToPlaylist = (id: string) => {
@@ -71,7 +94,8 @@ const HistoryPage = () =>  {
   };
 
   const handleVideoClick = (id: string) => {
-    router.push(`/?video=${id}`);
+    onVideoIdChange(id);
+    onModeChange('youtube');
   };
 
   return (

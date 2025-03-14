@@ -63,45 +63,7 @@ export default function YoutubeMode({ initialVideoId }: YoutubeModeProps) {
     }
     return null;
   };
-
-  const handleUrlInput = async (url: string) => {
-    const id = extractVideoId(url);
-    if (id) {
-      setVideoId(id);
-      setVideoKey(k => k + 1);
-      setError('');
-      
-      const title = await fetchVideoTitle(id);
-      const newRecent = {
-        id,
-        title,
-        timestamp: Date.now(),
-      };
-      
-      const updated = [newRecent, ...recentVideos.filter(v => v.id !== id)].slice(0, 10);
-      setRecentVideos(updated);
-      localStorage.setItem('recentYoutubeVideos', JSON.stringify(updated));
-    } else {
-      setError('Invalid YouTube URL or ID');
-    }
-    setVideoUrl('');
-  };
-
-  const handlePaste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      setVideoUrl(text);
-      handleUrlInput(text);
-    } catch (err) {
-      setError('Failed to read from clipboard');
-    }
-  };
-
-  const handleRecentVideoClick = (id: string) => {
-    setVideoId(id);
-    setVideoKey(k => k + 1);
-  };
-
+  
   return (
     <div className="space-y-6">
       <div className="max-w-4xl mx-auto">
@@ -111,20 +73,6 @@ export default function YoutubeMode({ initialVideoId }: YoutubeModeProps) {
           youtubeVideoId={videoId || undefined}
           key={videoKey}
         />
-
-        <div className="mt-4 flex justify-center">
-          <button
-            onClick={handlePaste}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center gap-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-            </svg>
-            Paste URL
-          </button>
-        </div>
-        {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
       </div>
     </div>
   );
