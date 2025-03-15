@@ -157,15 +157,6 @@ const Sidebar = ({ isOpen, onThemeToggle, isDarkMode, mode, onModeChange, onAudi
                 <FaFileAudio className="text-xl" />
                 {isOpen && <span>Upload Audio</span>}
               </button>
-              <button
-                onClick={triggerTextUpload}
-                className={`w-full flex items-center px-3 py-3 hover:bg-gray-100 cursor-pointer ${
-                  isOpen ? 'gap-4 pl-8' : 'justify-center'
-                }`}
-              >
-                <FaFileAlt className="text-xl" />
-                {isOpen && <span>Upload Text</span>}
-              </button>
             </>
           )}
           <button

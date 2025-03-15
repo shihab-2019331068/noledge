@@ -23,6 +23,10 @@ export default function ViewerMode({ audioFile, textFile }: ViewerModeProps) {
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [etaSeconds, setEtaSeconds] = useState<number | null>(null); // ETA in seconds
+  const [showDialog, setShowDialog] = useState(false);
+  const [pendingAudioFile, setPendingAudioFile] = useState<File | null>(null);
+  const [generationTime, setGenerationTime] = useState<number>(0);
+  const [selectedModel, setSelectedModel] = useState<'small' | 'medium' | 'large'>('medium');
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Process text file when it changes
@@ -72,9 +76,12 @@ export default function ViewerMode({ audioFile, textFile }: ViewerModeProps) {
   // Function to generate subtitles using Whisper via API
   const generateSubtitles = async (file: File) => {
     setLoading(true);
+    const startTime = Date.now();
+
     try {
       const formData = new FormData();
       formData.append("audio", file);
+      formData.append("model", selectedModel);
 
       const response = await fetch("/api/transcribe", {
         method: "POST",
@@ -83,7 +90,8 @@ export default function ViewerMode({ audioFile, textFile }: ViewerModeProps) {
 
       const data = await response.json();
       if (data.transcription) {
-        // Format the transcription into SRT format before parsing
+        const endTime = Date.now();
+        setGenerationTime((endTime - startTime) / 1000);
         const srtContent = formatTranscriptionToSRT(data.transcription);
         const parsedSubtitles = parseSubtitles(srtContent);
         setSubtitles(parsedSubtitles);
@@ -91,30 +99,46 @@ export default function ViewerMode({ audioFile, textFile }: ViewerModeProps) {
           setCurrentSubtitle(parsedSubtitles[0].text);
           setCurrentSubtitleIndex(0);
         }
-      } else {
-        console.error("Subtitle generation failed:", data.error);
       }
     } catch (error) {
       console.error("Error generating subtitles:", error);
     } finally {
       setLoading(false);
-      setEtaSeconds(null); // Reset ETA when done
+      setEtaSeconds(null);
     }
   };
 
   // Load audio file, set source, and calculate ETA
   useEffect(() => {
-    if (audioFile) {
+    if (audioFile && !textFile) {
       const src = URL.createObjectURL(audioFile);
       setAudioSrc(src);
-      getAudioDuration(audioFile).then((duration) => {
-        const eta = calculateETA(duration); // Calculate ETA based on duration
-        setEtaSeconds(eta);
-        generateSubtitles(audioFile); // Trigger subtitle generation
-      });
-      return () => URL.revokeObjectURL(src); // Cleanup
+      setPendingAudioFile(audioFile);
+      setShowDialog(true);
+      return () => URL.revokeObjectURL(src);
+    } else if (audioFile && textFile) {
+      // If both files are provided, just set the audio source
+      const src = URL.createObjectURL(audioFile);
+      setAudioSrc(src);
+      return () => URL.revokeObjectURL(src);
     }
-  }, [audioFile]);
+  }, [audioFile, textFile]);
+
+  const handleGenerateSubtitles = () => {
+    if (pendingAudioFile) {
+      getAudioDuration(pendingAudioFile).then((duration) => {
+        const eta = calculateETA(duration);
+        setEtaSeconds(eta);
+        generateSubtitles(pendingAudioFile);
+      });
+    }
+    setShowDialog(false);
+  };
+
+  const handleUploadSubtitles = () => {
+    setShowDialog(false);
+    // User will need to upload subtitle file separately
+  };
 
   // Get audio duration using an Audio element
   const getAudioDuration = (file: File): Promise<number> => {
@@ -255,9 +279,47 @@ export default function ViewerMode({ audioFile, textFile }: ViewerModeProps) {
               </div>
             ) : (
               <div className="p-2 rounded text-sm text-white bg-gray-700 dark:bg-gray-600">
-                Subtitle added Sucksexfully!!
+                Subtitles generated successfully! (Time taken: {generationTime.toFixed(1)} seconds)
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {showDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+            <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">
+              Choose Subtitle Source
+            </h3>
+            <div className="space-y-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Whisper Model
+                </label>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value as 'small' | 'medium' | 'large')}
+                  className="w-full p-2 border rounded bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                >
+                  <option value="small">Small (Faster, less accurate)</option>
+                  <option value="medium">Medium (Balanced)</option>
+                  <option value="large">Large (Slower, more accurate)</option>
+                </select>
+              </div>
+              <button
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={handleGenerateSubtitles}
+              >
+                Generate Subtitles
+              </button>
+              <button
+                className="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                onClick={handleUploadSubtitles}
+              >
+                Upload Subtitles
+              </button>
+            </div>
           </div>
         </div>
       )}
